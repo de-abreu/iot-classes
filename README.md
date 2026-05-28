@@ -21,8 +21,11 @@ Politehnica din Timișoara － UPT). Including:
 
 ### Windows (WSL2)
 
-If you are on Windows, you can run this environment inside WSL2. Open PowerShell
-as Administrator and run:
+If you are on Windows, you can run this environment inside WSL2.
+
+> [!WARNING]
+> The bootstrap script requires **elevated privileges**. Right-click PowerShell
+> and select **Run as Administrator** before running the command below.
 
 ```powershell
 irm https://raw.githubusercontent.com/de-abreu/iot-classes/main/scripts/bootstrap-wsl2.ps1 | iex
