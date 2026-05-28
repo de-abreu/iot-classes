@@ -10,8 +10,9 @@ let
   zed-local = inputs.wrappers.lib.wrapPackage {
     inherit pkgs;
     package = pkgs.zed-editor-fhs;
+    runtimeInputs = [ pkgs.opencode ];
     env = {
-      ZED_ENV = true;
+      ZED_LOCAL = true;
       XDG_CONFIG_HOME = "${root}/.config";
     };
   };
@@ -20,7 +21,6 @@ in
   packages = with pkgs; [
     feh
     networkmanager
-    opencode
     openssh
     pandoc
     rpi-imager
