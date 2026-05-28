@@ -41,8 +41,31 @@ Open **PowerShell as Administrator** and run:
 wsl --install -d Ubuntu-24.04
 ```
 
-Restart your computer if prompted. After the restart, a terminal will appear
-asking you to create a Unix username and password — choose whatever you like.
+Restart your computer if prompted.
+
+### First-time Ubuntu setup
+
+After the restart (or after a fresh install), a Ubuntu terminal will appear
+asking you to create a Unix username and password. This is your Linux user
+account — it does **not** need to match your Windows credentials.
+
+1. **Username**: type a lowercase username (no spaces, e.g. `student`) and press
+   Enter. This will be your home directory name (`/home/student`).
+2. **Password**: type a password and press Enter. Note that nothing will appear
+   on screen as you type — this is normal. Type it again to confirm.
+
+Once the prompt `username@computername:~$` appears, your Ubuntu environment is
+ready. Close the terminal.
+
+> [!NOTE]
+>
+> If the Ubuntu terminal does not appear automatically after a restart, open it
+> manually from the Start Menu (search for "Ubuntu") or launch it from
+> PowerShell:
+>
+> ```powershell
+> wsl -d Ubuntu-24.04
+> ```
 
 Verify the installation:
 

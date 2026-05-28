@@ -84,8 +84,18 @@ if (-not $wslInstalled) {
         Read-Host "Press Enter to close this window"
         exit 1
     }
-    Write-OK "WSL2 and Ubuntu-24.04 installed. A restart may be required."
-    Write-Warn "If this is a fresh install, restart your computer and re-run this script."
+    Write-OK "WSL2 and Ubuntu-24.04 installed."
+    Write-Host ""
+    Write-Host "  *** A restart is likely required. ***" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  After restarting, a Ubuntu terminal will appear asking you to create" -ForegroundColor White
+    Write-Host "  a username and password. See the instructions in the next step." -ForegroundColor White
+    Write-Host ""
+    Write-Host "  If the Ubuntu terminal does not appear, open it from the Start Menu" -ForegroundColor White
+    Write-Host "  or run: wsl -d Ubuntu-24.04" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "  After completing the Ubuntu setup, re-run this script." -ForegroundColor White
+    Write-Host ""
     Read-Host "Press Enter to close this window"
     exit 0
 }
@@ -109,8 +119,18 @@ if (-not $hasUbuntu) {
     Write-Status "No Ubuntu distro found. Installing Ubuntu-24.04..."
     wsl --install -d Ubuntu-24.04
     Write-OK "Ubuntu-24.04 installed."
-    Write-Warn "If this is a new install, you may need to set up a username/password first."
-    Write-Warn "Run this script again after completing the initial Ubuntu setup."
+    Write-Host ""
+    Write-Host "  A Ubuntu terminal should now be open asking you to create a username" -ForegroundColor Yellow
+    Write-Host "  and password. This is your Linux user account (it does not need to" -ForegroundColor Yellow
+    Write-Host "  match your Windows credentials)." -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  1. Type a lowercase username (no spaces, e.g. 'student') and press Enter" -ForegroundColor White
+    Write-Host "  2. Type a password (nothing will show on screen — this is normal) and press Enter" -ForegroundColor White
+    Write-Host "  3. Type the password again to confirm" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  Once you see the prompt (e.g. 'student@computer:~$'), close the terminal" -ForegroundColor White
+    Write-Host "  and re-run this script." -ForegroundColor White
+    Write-Host ""
     Read-Host "Press Enter to close this window"
     exit 0
 }
