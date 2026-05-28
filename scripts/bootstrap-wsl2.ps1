@@ -1,19 +1,21 @@
-#Requires -RunAsAdministrator
-
-<#
-.SYNOPSIS
-    Bootstraps WSL2 with Ubuntu for the IoT Lab environment.
-
-.DESCRIPTION
-    This script checks for and installs WSL2 with a Ubuntu distro, installs
-    usbipd-win for USB passthrough, and launches the Linux-side bootstrap
-    script that installs Nix, devenv, and clones the iot-classes repository.
-
-.EXAMPLE
-    .\bootstrap-wsl2.ps1
-#>
+# Bootstrap script for WSL2 environment setup
+# Run this script in an elevated PowerShell (Run as Administrator)
 
 $ErrorActionPreference = "Stop"
+
+# ── Admin check ──────────────────────────────────────────────────────────────
+
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host ""
+    Write-Host "[ERROR] This script must be run as Administrator." -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Right-click PowerShell and select 'Run as Administrator', then run:" -ForegroundColor White
+    Write-Host "  irm https://raw.githubusercontent.com/de-abreu/iot-classes/main/scripts/bootstrap-wsl2.ps1 | iex" -ForegroundColor Cyan
+    Write-Host ""
+    Read-Host "Press Enter to exit"
+    exit 1
+}
+
 $RepoUrl = "https://github.com/de-abreu/iot-classes.git"
 
 function Write-Status($Message) {
@@ -61,6 +63,7 @@ elseif ($winBuild -ge 19044) {
 else {
     Write-Err "Windows build $winBuild is not supported. Build 19044+ (Windows 10 21H2) or Windows 11 is required."
     Write-Err "Update Windows or consider using a Linux system instead."
+    Read-Host "Press Enter to close this window"
     exit 1
 }
 
@@ -78,10 +81,12 @@ if (-not $wslInstalled) {
         Write-Err "Also try enabling the Windows features manually:"
         Write-Host "  dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart" -ForegroundColor Gray
         Write-Host "  dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart" -ForegroundColor Gray
+        Read-Host "Press Enter to close this window"
         exit 1
     }
     Write-OK "WSL2 and Ubuntu-24.04 installed. A restart may be required."
     Write-Warn "If this is a fresh install, restart your computer and re-run this script."
+    Read-Host "Press Enter to close this window"
     exit 0
 }
 else {
@@ -106,6 +111,7 @@ if (-not $hasUbuntu) {
     Write-OK "Ubuntu-24.04 installed."
     Write-Warn "If this is a new install, you may need to set up a username/password first."
     Write-Warn "Run this script again after completing the initial Ubuntu setup."
+    Read-Host "Press Enter to close this window"
     exit 0
 }
 else {
@@ -185,3 +191,5 @@ if (-not $HasWSLg) {
 Write-Host "  As a Computer Science student, you really should consider" -ForegroundColor Yellow
 Write-Host "  switching to Linux. Software wants to be free." -ForegroundColor Yellow
 Write-Host ""
+
+Read-Host "Press Enter to close this window"
