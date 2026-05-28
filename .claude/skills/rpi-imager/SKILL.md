@@ -38,6 +38,43 @@ Remind the student to have:
 - A Raspberry Pi with Wi-Fi capabilities (such as the A or B series, models 3 or
   higher, or any other with a Wi-Fi dongle)
 
+### WSL2 Users: USB passthrough for SD card readers
+
+If `WSL_DISTRO_NAME` is set, the student's SD card reader is **not visible by
+default** inside WSL2. USB devices must be attached from the Windows host using
+`usbipd-win`.
+
+Instruct the student to:
+
+1. Open **PowerShell** on Windows (no admin needed for attaching)
+2. List USB devices:
+
+   ```powershell
+   usbipd wsl list
+   ```
+
+3. Find the SD card reader in the list (look for "Shared" = "Not shared")
+4. Attach it:
+
+   ```powershell
+   usbipd wsl attach --busid <busid>
+   ```
+
+5. Back in WSL2, verify with `lsblk` — the SD card should now appear
+
+> [!WARNING]
+>
+> If `usbipd` is not installed on Windows, the student needs to install it first
+> from an elevated PowerShell:
+>
+> ```powershell
+> winget install usbipd
+> ```
+>
+> Alternatively, the student can use the Windows-native rpi-imager from
+> [raspberrypi.com/software](https://www.raspberrypi.com/software/) to flash
+> the SD card, then continue with the rest of the lab inside WSL2.
+
 ---
 
 ## General warnings
@@ -88,6 +125,34 @@ xhost -SI:localuser:root    # Revoke after finishing (recommended)
 
 Then run `echo "$XDG_SESSION_TYPE"` and display its result to the user.
 
+### WSL2 Users: GUI support for rpi-imager
+
+If `WSL_DISTRO_NAME` is set, the `xhost` workaround is unnecessary. WSLg
+handles display forwarding natively on Windows 11. Simply run:
+
+```bash
+sudo rpi-imager
+```
+
+If this fails with a display error, try:
+
+```bash
+export DISPLAY=:0
+sudo DISPLAY=:0 rpi-imager
+```
+
+On Windows 10 without WSLg, an X server (such as VcXsrv) must be running and
+`DISPLAY` must point to it:
+
+```bash
+export DISPLAY=$(ip route show default | awk '{print $3}'):0
+sudo DISPLAY=$(ip route show default | awk '{print $3}'):0 rpi-imager
+```
+
+Alternatively, use the Windows-native rpi-imager from
+[raspberrypi.com/software](https://www.raspberrypi.com/software/) and skip
+this step entirely.
+
 ---
 
 ## Step 1: Check viable target devices
@@ -100,6 +165,12 @@ candidates:
 3. Large enough for the target image
 
 Warn if multiple candidates are found and let the user confirm their target.
+
+> [!NOTE]
+>
+> WSL2 users: if `lsblk` shows no SD card, the USB device was not attached via
+> usbipd. Follow the USB passthrough instructions in the Prerequisites section
+> above.
 
 ---
 

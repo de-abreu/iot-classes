@@ -87,6 +87,18 @@ Then ask the student to display the GPIO pinout diagram by running:
 feh .claude/skills/gpio-dht-setup/gpio-pinout.png
 ```
 
+> [!NOTE]
+>
+> WSL2 users: if `feh` fails with a display error, open the images directly in
+> Windows:
+>
+> ```bash
+> explorer.exe .claude/skills/gpio-dht-setup/
+> ```
+>
+> This opens the folder in Windows Explorer where you can double-click the images
+> to view them.
+
 ---
 
 ## Step 2: The DHT11 sensor
@@ -207,6 +219,11 @@ feh .claude/skills/gpio-dht-setup/dht11-breadboard-1.png
 feh .claude/skills/gpio-dht-setup/dht11-breadboard-2.png
 ```
 
+> [!NOTE]
+>
+> WSL2 users: if `feh` fails with a display error, see the note in Step 1 about
+> using `explorer.exe` to view images in Windows.
+
 These images show the DHT11 on a breadboard with:
 
 - Red cable for VCC
@@ -222,6 +239,11 @@ running:
 ```bash
 feh .claude/skills/gpio-dht-setup/dht11-wiring-diagram.png
 ```
+
+> [!NOTE]
+>
+> WSL2 users: if `feh` fails with a display error, see the note in Step 1 about
+> using `explorer.exe` to view images in Windows.
 
 This diagram shows a complete valid configuration connecting the DHT11 through
 the breadboard to the Raspberry Pi GPIO header.

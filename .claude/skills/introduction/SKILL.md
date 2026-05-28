@@ -54,6 +54,25 @@ access to LSPs that will greatly aid them in writing code.
 Do not mention it — the student is using a different interface (e.g., a
 standalone terminal or another editor) and this hint is not relevant.
 
+## WSL2 environment check
+
+Check whether the environment variable `WSL_DISTRO_NAME` is set. This indicates
+the student is running inside Windows Subsystem for Linux.
+
+### If `WSL_DISTRO_NAME` is set
+
+Trigger the `wsl2-setup` skill to walk the student through configuring their WSL2
+environment (GUI support, systemd, USB passthrough). After the WSL2 setup checks
+are complete, return here and continue with report consent and routing.
+
+> *[As a Computer Science student, you really should consider switching to Linux.
+> Software wants to be free. But until you see the light, WSL2 will have to do.]*
+
+### If `WSL_DISTRO_NAME` is not set
+
+Do not mention WSL2 — the student is on a native Linux system and no special
+configuration is needed.
+
 ## Report consent
 
 Before routing the student to a class, check whether a `.env` file exists in the

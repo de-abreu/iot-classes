@@ -19,6 +19,19 @@ Politehnica din Timișoara － UPT). Including:
 - [git](https://git-scm.com/)
 - [devenv](https://devenv.sh/getting-started/)
 
+### Windows (WSL2)
+
+If you are on Windows, you can run this environment inside WSL2. Open PowerShell
+as Administrator and run:
+
+```powershell
+irm https://raw.githubusercontent.com/de-abreu/iot-classes/main/scripts/bootstrap-wsl2.ps1 | iex
+```
+
+This will install WSL2, Ubuntu, Nix, devenv, and clone the repository. See
+[docs/wsl2.md](docs/wsl2.md) for detailed instructions, troubleshooting, and
+known limitations.
+
 ### Hardware
 
 - Raspberry Pi (3, 4, or 5) — other models with Bluetooth (or a Bluetooth

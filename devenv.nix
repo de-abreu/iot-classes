@@ -17,17 +17,21 @@ let
   };
 in
 {
-  packages = with pkgs; [
-    feh
-    networkmanager
-    opencode
-    openssh
-    pandoc
-    rpi-imager
-    sshpass
-    xhost
-    zed-local
-  ];
+  packages =
+    with pkgs;
+    [
+      feh
+      opencode
+      openssh
+      pandoc
+      rpi-imager
+      sshpass
+      xhost
+      zed-local
+    ]
+    ++ lib.optionals (builtins.getEnv "WSL_DISTRO_NAME" == "") [
+      networkmanager
+    ];
 
   scripts.start.exec = "${lib.getExe zed-local} ${root}";
 

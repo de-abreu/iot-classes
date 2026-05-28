@@ -80,31 +80,62 @@ sudo nmcli connection add type ethernet ifname <interface> con-name <interface> 
 sudo nmcli connection up <interface>
 ```
 
-### 1b. Is the interface on the correct subnet?
+### WSL2 Users: Network configuration without NetworkManager
+
+If `WSL_DISTRO_NAME` is set, `nmcli` is not available in this environment.
+WSL2 manages networking differently — the Ethernet adapter visible in WSL2 is
+a virtual NIC bridged to the Windows host, and the physical adapter may not
+appear.
+
+#### Option A: Configure from Windows (recommended)
+
+1. Open **Windows Settings → Network & Internet → Advanced network settings**
+2. Find the Ethernet adapter connected to the Raspberry Pi
+3. Set a static IP:
+   - IP address: `169.254.1.1`
+   - Subnet mask: `255.255.0.0` (i.e., `/16`)
+   - Default gateway: leave blank
+   - DNS: leave blank
+
+Then verify from WSL2:
 
 ```bash
-ip addr show <interface>
+ping -c 3 169.254.x.x   # the Pi's address
 ```
 
-Raspberry Pi OS defaults to link-local addressing (`169.254.x.x`) when no DHCP
-server is present. Your interface **must** be in the `169.254.0.0/16` subnet to
-communicate with the Pi.
+#### Option B: Mirrored networking mode (WSL 2.0+)
 
-If the interface has an IP in a different subnet (e.g., `10.0.0.1/30`), the Pi
-will be unreachable. Reconfigure it:
+Create `%USERPROFILE%\.wslconfig` on Windows with:
+
+```ini
+[wsl2]
+networkingMode=mirrored
+```
+
+Restart WSL: `wsl --shutdown` from PowerShell. In mirrored mode, WSL2 shares
+the host's network interfaces and the Ethernet adapter becomes visible, allowing
+standard `ip` commands to configure it:
 
 ```bash
-sudo nmcli connection modify <interface> ipv4.addresses 169.254.1.1/16
-sudo nmcli connection modify <interface> ipv4.method manual
-sudo nmcli connection up <interface>
+sudo ip addr add 169.254.1.1/16 dev <interface>
+sudo ip link set <interface> up
+```
+
+#### Option C: Configure from WSL2 using iproute2 (if the adapter appears)
+
+If the physical Ethernet interface is visible inside WSL2:
+
+```bash
+sudo ip addr add 169.254.1.1/16 dev <interface>
+sudo ip link set <interface> up
 ```
 
 > [!WARNING]
 >
-> Do **not** use `/30` subnet masks for direct Ethernet connections to a
-> Raspberry Pi. The Pi's link-local address is in the `169.254.0.0/16` range and
-> a `/30` on a different subnet makes it unreachable. Use `/16` to cover the
-> full link-local range.
+> In many WSL2 setups, the physical Ethernet adapter is **not visible** inside
+> WSL2. Only the virtual `eth0` (used for internet access) appears. If the
+> adapter is not visible, the student **must** configure it from Windows
+> (Option A) or use mirrored mode (Option B).
 
 ### 1c. Can the Pi be pinged?
 
@@ -121,6 +152,27 @@ If pings fail, re-check steps 1a and 1b. If they pass, continue.
 ```bash
 ping -c 3 <hostname>.local
 ```
+
+### WSL2 Users: Avahi setup
+
+WSL2 does not run systemd by default. Avahi must be installed and started
+manually:
+
+```bash
+sudo apt install avahi-daemon
+sudo avahi-daemon
+```
+
+If systemd is enabled in `/etc/wsl.conf`, use `systemctl` instead:
+
+```bash
+sudo systemctl enable --now avahi-daemon
+```
+
+> [!NOTE]
+>
+> If Avahi fails, the student can connect using the Pi's IP address directly
+> (e.g., `ssh user@169.254.x.x`) instead of `user@hostname.local`.
 
 If this fails with "Name or service not known" or "Temporary failure in name
 resolution":
@@ -257,7 +309,7 @@ fashion.
 
 ## Troubleshooting reference
 
-### "Device is busy"
+### Device is busy
 
 This error from `nmcli` usually means the connection profile conflicts with
 another. Solutions:
@@ -275,7 +327,17 @@ sudo nmcli connection add type ethernet ifname <interface> con-name <interface> 
 sudo nmcli connection up <interface>
 ```
 
-### "Connection timed out"
+### WSL2: Ethernet adapter not visible
+
+If `ip link show` does not list the physical Ethernet adapter, it is being
+managed by Windows and not passed through to WSL2. Solutions:
+
+1. **Configure the adapter from Windows** — see Step 1, Option A
+2. **Use mirrored networking mode** — see Step 1, Option B
+3. **Connect by IP address** — if `ping 169.254.x.x` works from Windows, the
+   Pi is reachable; the student just can't see the adapter inside WSL2
+
+### Connection timed out
 
 Typically caused by a subnet mismatch. Verify both ends are on `169.254.0.0/16`:
 

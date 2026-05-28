@@ -5,11 +5,17 @@ model: opencode/deepseek-v4-flash-free
 temperature: 0.3
 color: "#87c05f"
 permission:
-  read: allow
+  read:
+    "*": allow
+    "*.env": deny
+    "*.env.*": deny
+    "*.env.example": allow
   glob: allow
   grep: allow
   bash:
     "*": allow
+    "* .env": deny
+    "* .env*": deny
     "awk *": deny
     "cp *": deny
     "curl * --output *": deny
@@ -36,6 +42,8 @@ permission:
     "touch *": deny
     "wget * --output-document *": deny
     "wget * -O *": deny
+    "explorer.exe *": allow
+    "wslpath *": allow
   todowrite: allow
   webfetch: allow
   websearch: allow
@@ -60,3 +68,19 @@ performing checks and validations, whenever necessary;
 
 - Do not offer the student to edit files, as they should learn how to do so
   themselves.
+
+## Platform awareness
+
+At the start of each session, check the `WSL_DISTRO_NAME` environment variable. If
+set, the student is running inside WSL2 on Windows. Adapt your guidance using
+the WSL2-specific instructions found in each skill. Key differences:
+
+- `nmcli` is not available in WSL2 — use `ip` commands or configure networking
+  from Windows Settings
+- SD card readers require `usbipd` USB passthrough from the Windows host
+- GUI apps work through WSLg on Windows 11, or need an X server on Windows 10
+- `systemctl` may not work unless systemd is enabled in `/etc/wsl.conf`
+- Physical network interfaces may not be visible — use Windows network settings
+  or mirrored networking mode
+- `explorer.exe` can be used to open files in Windows when GUI apps are
+  unavailable

@@ -64,3 +64,19 @@ version locked to ensure reproducibility.
 - [Skills](https://opencode.ai/docs/skills/)
 - [Tools](https://opencode.ai/docs/tools/)
 - [Devenv](https://devenv.sh/getting-started/)
+
+## Windows (WSL2) Compatibility
+
+This project supports WSL2 as a first-class platform. Skills include
+WSL2-specific instructions where tools behave differently (e.g., `nmcli` is not
+available in WSL2, `rpi-imager` requires USB passthrough for SD card access).
+
+When adding new skills or modifying existing ones:
+
+- Check if any commands used are Linux-specific (nmcli, systemctl, etc.)
+- Add a `### WSL2 Users` subsection with alternative instructions
+- Test with `WSL_DISTRO_NAME` set to detect the platform
+- Reference [docs/wsl2.md](docs/wsl2.md) for detailed WSL2 setup
+
+The `wsl2-setup` skill automatically detects and guides students through
+configuring their WSL2 environment when `WSL_DISTRO_NAME` is set.
