@@ -38,8 +38,15 @@ Follow the steps below.
 Open **PowerShell as Administrator** and run:
 
 ```powershell
-wsl --install -d Ubuntu-24.04
+wsl --install
 ```
+
+This enables the WSL feature and installs the default Ubuntu distribution. A
+restart is usually required.
+
+> If you already have WSL installed and just need Ubuntu-24.04, use
+> `wsl --install Ubuntu-24.04` instead (without the `-d` flag — that flag is
+> only for the initial `wsl --install` that enables the Windows feature).
 
 Restart your computer if prompted.
 

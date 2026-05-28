@@ -67,16 +67,26 @@ else {
     exit 1
 }
 
-# ── Step 2: Check/install WSL ───────────────────────────────────────────────
+# ── Step 2: Install WSL ──────────────────────────────────────────────────────
 
 Write-Status "Checking WSL installation..."
 
-$wslInstalled = $null -ne (Get-Command wsl -ErrorAction SilentlyContinue)
+# Check whether WSL is truly functional (not just the inbox stub)
+$wslFunctional = $false
+try {
+    $wslStatus = wsl --status 2>&1
+    $wslFunctional = $LASTEXITCODE -eq 0
+}
+catch {
+    $wslFunctional = $false
+}
 
-if (-not $wslInstalled) {
-    Write-Status "Installing WSL2 with Ubuntu-24.04..."
-    wsl --install -d Ubuntu-24.04
-    if ($LASTEXITCODE -ne 0) {
+if (-not $wslFunctional) {
+    Write-Status "WSL is not installed. Installing WSL2..."
+    # wsl --install enables the feature and installs the default distro.
+    # A reboot is usually required after this step.
+    wsl --install
+    if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 1) {
         Write-Err "WSL installation failed. You may need to enable Virtualization (VT-x) in BIOS."
         Write-Err "Also try enabling the Windows features manually:"
         Write-Host "  dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart" -ForegroundColor Gray
@@ -84,17 +94,11 @@ if (-not $wslInstalled) {
         Read-Host "Press Enter to close this window"
         exit 1
     }
-    Write-OK "WSL2 and Ubuntu-24.04 installed."
+    Write-OK "WSL installed."
     Write-Host ""
     Write-Host "  *** A restart is likely required. ***" -ForegroundColor Yellow
     Write-Host ""
-    Write-Host "  After restarting, a Ubuntu terminal will appear asking you to create" -ForegroundColor White
-    Write-Host "  a username and password. See the instructions in the next step." -ForegroundColor White
-    Write-Host ""
-    Write-Host "  If the Ubuntu terminal does not appear, open it from the Start Menu" -ForegroundColor White
-    Write-Host "  or run: wsl -d Ubuntu-24.04" -ForegroundColor Cyan
-    Write-Host ""
-    Write-Host "  After completing the Ubuntu setup, re-run this script." -ForegroundColor White
+    Write-Host "  After restarting, re-run this script to continue setup." -ForegroundColor White
     Write-Host ""
     Read-Host "Press Enter to close this window"
     exit 0
@@ -117,7 +121,9 @@ $hasUbuntu = $distros -match "Ubuntu"
 
 if (-not $hasUbuntu) {
     Write-Status "No Ubuntu distro found. Installing Ubuntu-24.04..."
-    wsl --install -d Ubuntu-24.04
+    # When WSL is already installed, use 'wsl --install <Distro>' (no -d flag).
+    # The -d flag is only for the initial 'wsl --install' which enables the feature.
+    wsl --install Ubuntu-24.04
     Write-OK "Ubuntu-24.04 installed."
     Write-Host ""
     Write-Host "  A Ubuntu terminal should now be open asking you to create a username" -ForegroundColor Yellow
