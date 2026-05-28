@@ -17,11 +17,12 @@ Politehnica din Timișoara － UPT). Including:
 ### Programs
 
 - [git](https://git-scm.com/)
-- [**devenv**](https://devenv.sh/getting-started/)
+- [devenv](https://devenv.sh/getting-started/)
 
 ### Hardware
 
-- Raspberry Pi (3, 4, or 5) with Wi-Fi
+- Raspberry Pi (3, 4, or 5) — other models with Bluetooth (or a Bluetooth
+  dongle) also work
 - MicroSD card (8 GB minimum; 16+ GB recommended)
 - SD card reader (built-in or USB adapter)
 - Ethernet cable

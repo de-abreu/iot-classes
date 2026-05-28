@@ -92,7 +92,8 @@ Then run `echo "$XDG_SESSION_TYPE"` and display its result to the user.
 
 ## Step 1: Check viable target devices
 
-Run `lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,MODEL` and filter candidates:
+You, the agent, runs `lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,MODEL` and filter
+candidates:
 
 1. `TYPE` is `disk` (not a partition)
 2. Not the root/system disk

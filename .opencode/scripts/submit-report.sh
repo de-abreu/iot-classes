@@ -3,40 +3,46 @@ set -euo pipefail
 
 usage() {
     cat <<EOF
-Usage: $(basename "$0") <session_id> <discipline> <concluded> [reason] <server_url> [--async] [--summary <text>]
+Usage: $(basename "$0") <discipline> <concluded> <transcript_file> <server_url> <agent> <model> <session_slug> [reason] [--async] [--summary <text>]
 
 Arguments:
-  session_id   The opencode session ID (e.g. ses_xxx)
-  discipline   One of: internet-of-things, embedded-systems
-  concluded    true or false
-  reason       (optional) Reason if not concluded, use "" if none
-  server_url   Report server URL (e.g. https://xxx.trycloudflare.com)
+  discipline       One of: internet-of-things, embedded-systems
+  concluded        true or false
+  transcript_file  Path to the Markdown transcript file (e.g. .reports/iot-2026-05-28.md)
+  server_url       Report server URL (e.g. https://xxx.trycloudflare.com)
+  agent            Name of the agent (e.g. Learn)
+  model            Model identifier (e.g. deepseek-v4-flash-free)
+  session_slug     Descriptive slug with random suffix (e.g. iot-class1-dG9rZW4)
+  reason           (optional) Reason if not concluded, use "" if none
 
 Options:
-  --async      Fire-and-forget mode: submit in background, return immediately
-  --summary    Optional summary text for the report
+  --async          Fire-and-forget mode: submit in background, return immediately
+  --summary        Optional summary text for the report
 
 Environment:
-  AUTH_TOKEN    Auth token for the report server (read from .env or env var)
+  AUTH_TOKEN       Auth token for the report server (read from .env or env var)
 EOF
     exit 1
 }
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-if [[ $# -lt 4 ]]; then
+if [[ $# -lt 7 ]]; then
     usage
 fi
 
-SESSION_ID="$1"
-DISCIPLINE="$2"
-CONCLUDED="$3"
-REASON="${4:-}"
-SERVER_URL="$5"
+DISCIPLINE="$1"
+CONCLUDED="$2"
+TRANSCRIPT_FILE="$3"
+SERVER_URL="$4"
+AGENT="$5"
+MODEL="$6"
+SESSION_SLUG="$7"
+REASON="${8:-}"
 ASYNC=false
 SUMMARY=""
 
-EXTRA_ARGS=("${@:6}")
+EXTRA_ARGS=("${@:9}")
 
 i=0
 while [[ $i -lt ${#EXTRA_ARGS[@]} ]]; do
@@ -46,6 +52,11 @@ while [[ $i -lt ${#EXTRA_ARGS[@]} ]]; do
         *)         echo "Unknown option: ${EXTRA_ARGS[$i]}" >&2; usage ;;
     esac
 done
+
+if [[ ! -f "$TRANSCRIPT_FILE" ]]; then
+    echo "Error: Transcript file not found: $TRANSCRIPT_FILE" >&2
+    exit 1
+fi
 
 if [[ -f .env ]]; then
     set -a
@@ -65,21 +76,16 @@ if [[ -z "${AUTH_TOKEN:-}" ]]; then
     exit 1
 fi
 
-EXPORT_FILE="/tmp/opencode-export-${SESSION_ID}.json"
-PAYLOAD_FILE="/tmp/report-payload-${SESSION_ID}.json"
-trap 'rm -f "$EXPORT_FILE" "$PAYLOAD_FILE"' EXIT
-
-opencode export "$SESSION_ID" > "$EXPORT_FILE" 2>/dev/null
-if [[ ! -s "$EXPORT_FILE" ]]; then
-    echo "Error: Failed to export session $SESSION_ID" >&2
-    exit 1
-fi
+PAYLOAD_FILE="/tmp/report-payload-$$.json"
+trap 'rm -f "$PAYLOAD_FILE"' EXIT
 
 python3 "$SCRIPT_DIR/build_payload.py" \
-    "$EXPORT_FILE" \
+    "$TRANSCRIPT_FILE" \
     "$DISCIPLINE" \
     "$CONCLUDED" \
-    "$SESSION_ID" \
+    "$AGENT" \
+    "$MODEL" \
+    "$SESSION_SLUG" \
     "$REASON" \
     "$SUMMARY" \
     > "$PAYLOAD_FILE"
@@ -101,11 +107,10 @@ if [[ "$ASYNC" == true ]]; then
         -H "Content-Type: application/json" \
         -H "X-Auth-Token: ${AUTH_TOKEN}" \
         -d @"${PAYLOAD_FILE}" \
-        &>/tmp/report-result-${SESSION_ID}.log \
+        &>/tmp/report-result-$$.log \
         & disown
-    echo "Report queued for submission (async). Session: ${SESSION_ID}"
+    echo "Report queued for submission (async)."
 else
     RESULT=$(submit_report)
     echo "$RESULT"
-    rm -f "$PAYLOAD_FILE"
 fi

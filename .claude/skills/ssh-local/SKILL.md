@@ -199,7 +199,7 @@ user's actual password through the chat.
 ### On the student's terminal
 
 ```bash
-ssh-keygen -t ed25519 -f ~/.ssh/opencode-remote-raspberry -C "opencode-remote-raspberry"
+ssh-keygen -t ed25519 -f ~/.ssh/opencode-remote-raspberry -C "opencode-remote-raspberry" -N ""
 ssh-copy-id -i ~/.ssh/opencode-remote-raspberry.pub <user>@<hostname>.local
 ```
 

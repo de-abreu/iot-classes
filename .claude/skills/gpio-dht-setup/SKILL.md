@@ -312,9 +312,9 @@ specific questions:
 > scp -i ~/.ssh/opencode-remote-raspberry hum_sensor.py <user>@<hostname>.local:~
 > ```
 >
-> When working locally, if they run into trouble, they can share their code or
-> diagnostics using the `@` prefix at the start of their message to provide the
-> agent with more context.
+> If ZED_LOCAL = true, also remind them that, if they run into trouble, they can
+> share their code or diagnostics with you writing `@` in their message and
+> selecting those from the menu.
 
 ### Pseudocode reference
 

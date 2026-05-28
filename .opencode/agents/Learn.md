@@ -31,7 +31,6 @@ permission:
     "sed *": deny
     "ssh-copy-id *": deny
     "ssh-keygen *": deny
-    "nmcli *": deny
     "sudo *": deny
     "tee *": deny
     "touch *": deny
@@ -43,7 +42,9 @@ permission:
   lsp: allow
   skill: allow
   question: allow
-  edit: deny
+  edit:
+    "*": deny
+    ".reports/**": allow
   task: deny
   external_directory: ask
 ---
