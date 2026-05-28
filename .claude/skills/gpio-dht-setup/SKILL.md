@@ -376,7 +376,7 @@ If everything checks out, mark the todo list as complete.
 ## Routing
 
 If this skill was activated in a step-by-step manner, upon completion call the
-`wrap-up` skill.
+`class-1-wrap-up` skill.
 
 ---
 
