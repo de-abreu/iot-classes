@@ -16,9 +16,10 @@ devenv.local.yaml
 .opencode/plans
 .reports/
 
-# Sessions started in zed's terminal
+# Generated files
 .config/fish
 .config/opencode
+.config/zed/.cache
 
 # Classes
 labs/
